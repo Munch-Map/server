@@ -1,4 +1,13 @@
 package skuniv.munchmap.config.exception;
 
-public class BadRequestException {
+import lombok.Getter;
+
+@Getter
+public class BadRequestException extends RuntimeException {
+    private final ErrorResponseStatus status;
+
+    public BadRequestException(ErrorResponseStatus status) {
+        this.status = status;
+    }
+
 }
