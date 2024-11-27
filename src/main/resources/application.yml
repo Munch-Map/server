@@ -41,9 +41,9 @@ spring:
 
 logging:
   level:
-    root: INFO # WARN spring Security 경고/오류만 기록
-    org.springframework.security: INFO  # Spring Security에서 경고 및 오류만 기록
+    root: WARN # WARN spring Security 경고/오류만 기록
+    org.springframework.security: WARN  # Spring Security에서 경고 및 오류만 기록
     org.springframework.web: DEBUG # 시스템 흐름을 확인할 수 있음
-#    org.hibernate.SQL: ERROR  # SQL 관련 에러만 기록 (SQL 쿼리 관련 정보는 배포 환경에서는 보통 필요하지 않음)
-#    org.hibernate.type.descriptor.sql.BasicBinder: ERROR  # SQL 바인딩 관련 에러만 기록
-#    skuniv.munchmap: WARN  # 애플리케이션 전체에서 경고 및 오류만 기록
+    org.hibernate.SQL: ERROR  # SQL 관련 에러만 기록 (SQL 쿼리 관련 정보는 배포 환경에서는 보통 필요하지 않음)
+    org.hibernate.type.descriptor.sql.BasicBinder: ERROR  # SQL 바인딩 관련 에러만 기록
+    skuniv.munchmap: WARN  # 애플리케이션 전체에서 경고 및 오류만 기록

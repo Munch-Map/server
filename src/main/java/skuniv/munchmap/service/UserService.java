@@ -1,6 +1,8 @@
 package skuniv.munchmap.service;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import skuniv.munchmap.config.exception.BadRequestException;
 import skuniv.munchmap.config.exception.ErrorResponseStatus;
@@ -30,6 +32,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CategoryRepository categoryRepository;
+    private final StoreRepository storeRepository;
     private final UserFavorCategoryRepository userFavorCategoryRepository;
 
     // (1) 회원가입 메서드
@@ -97,13 +100,20 @@ public class UserService {
     // (2) 사용자 선호 카테고리 선택 메서드
     @Transactional
     public List<String> chooseUserFavor(UserRequest.userFavor userFavor, Long userId) {
+        System.out.println("Received categoryIds: " + userFavor.getCategoryIds());
+        if (userFavor.getCategoryIds() == null || userFavor.getCategoryIds().isEmpty()) {
+            throw new IllegalArgumentException("카테고리 ID가 비어 있습니다.");
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException(ErrorResponseStatus.INVALID_USERID));
 
-        List<Category> categories = StreamSupport.stream(
-                categoryRepository.findAllById(userFavor.getCategoryIds()).spliterator(),
-                false
-        ).collect(Collectors.toList());
+        // 선호하는 카테고리 아이디 리스트로 조회
+        List<Category> categories = categoryRepository.findAllByCategoryIds(userFavor.getCategoryIds());
+        System.out.println("Retrieved categories: " + categories);
+
+        if (categories.isEmpty()) {
+            throw new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다.");
+        }
 
         // 카테고리 설정
         List<UserFavorCategory> userFavorCategories = categories.stream()
@@ -113,11 +123,14 @@ public class UserService {
                         .build())
                 .collect(Collectors.toList());
         userFavorCategoryRepository.saveAll(userFavorCategories);
+        System.out.println("Saved UserFavorCategories: " + userFavorCategories);
 
         // 저장된 카테고리 이름 반환
-        return categories.stream()
+        List<String> savedFavor = categories.stream()
                 .map(Category::getType)
                 .collect(Collectors.toList());
+        System.out.println("Saved favor types: " + savedFavor);
+        return savedFavor;
     }
 
 
@@ -149,5 +162,34 @@ public class UserService {
     public ResponseEntity<Void> logout(HttpSession session) {
         session.invalidate(); // 세션 무효화
         return ResponseEntity.ok().build();
+    }
+
+    // (5) 사용자가 선택한 카테고리로 필터링
+    @Transactional
+    public List<StoreResponse.StoreResponseDTO> getFilteredStores(Long userId, Long lastStoreId) {
+        // 사용자의 선호 카테고리를 조회
+        List<Long> favoriteCategoryIds = userFavorCategoryRepository.findCategoryIdsByUserId(userId);
+
+        // 선호 카테고리가 없으면 랜덤으로 조회
+        if (favoriteCategoryIds == null || favoriteCategoryIds.isEmpty()) {
+            return getRandomStores(lastStoreId);
+        }
+
+        // 선호 카테고리를 기반으로 음식점 조회
+        Pageable pageable = PageRequest.of(0, 10);
+        return storeRepository.findStoresByCategoriesWithCursor(favoriteCategoryIds, lastStoreId, pageable)
+                .stream()
+                .map(StoreResponse.StoreResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    // (5)-1 랜덤으로 음식점 조회 (커서 페이징 적용)
+    @Transactional
+    public List<StoreResponse.StoreResponseDTO> getRandomStores(Long lastStoreId) {
+        Pageable pageable = PageRequest.of(0, 10);
+        return storeRepository.findRandomStoresWithCursor(lastStoreId, pageable)
+                .stream()
+                .map(StoreResponse.StoreResponseDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 }

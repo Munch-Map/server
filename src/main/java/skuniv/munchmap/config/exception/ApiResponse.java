@@ -1,4 +1,4 @@
-package skuniv.munchmap.exception;
+package skuniv.munchmap.config.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,19 +6,15 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor(force = true)
 public class ApiResponse<T> {
-    private boolean success;
-    private String message;
-    private T data;
-    private int status;
 
-    private ApiResponse(boolean success, String message, T data, int status) {
-        this.success = success;
-        this.message = message;
-        this.data = data;
-        this.status = status;
-    }
+    private final boolean success;
+    private final String message;
+    private final T data;
+    private final int status;
+
 
     // 성공
     public static <T> ApiResponse<T> success(String message, T data) {

@@ -2,8 +2,6 @@ package skuniv.munchmap.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import skuniv.munchmap.config.exception.BadRequestException;
-import skuniv.munchmap.config.exception.ErrorResponseStatus;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
