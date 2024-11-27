@@ -1,8 +1,13 @@
 #spring.application.name=munchmap
 
+# 서버 포트
 server:
   port: 3000
+
+# spring 설정
 spring:
+
+  # db 환경변수
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -34,13 +39,11 @@ spring:
     deserialization:
       fail-on-unknown-properties: false
 
-
-
 logging:
   level:
-    root: WARN
-    org.springframework.security: WARN  # Spring Security에서 경고 및 오류만 기록
-    org.hibernate.SQL: ERROR  # SQL 관련 에러만 기록 (SQL 쿼리 관련 정보는 배포 환경에서는 보통 필요하지 않음)
-    org.hibernate.type.descriptor.sql.BasicBinder: ERROR  # SQL 바인딩 관련 에러만 기록
-    org.springframework.web: WARN  # 웹 요청 관련 경고 및 오류만 기록
-    skuniv.munchmap: WARN  # 애플리케이션 전체에서 경고 및 오류만 기록
+    root: INFO # WARN spring Security 경고/오류만 기록
+    org.springframework.security: INFO  # Spring Security에서 경고 및 오류만 기록
+    org.springframework.web: DEBUG # 시스템 흐름을 확인할 수 있음
+#    org.hibernate.SQL: ERROR  # SQL 관련 에러만 기록 (SQL 쿼리 관련 정보는 배포 환경에서는 보통 필요하지 않음)
+#    org.hibernate.type.descriptor.sql.BasicBinder: ERROR  # SQL 바인딩 관련 에러만 기록
+#    skuniv.munchmap: WARN  # 애플리케이션 전체에서 경고 및 오류만 기록

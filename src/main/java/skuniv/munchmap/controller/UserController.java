@@ -1,4 +1,5 @@
 package skuniv.munchmap.controller;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -37,7 +38,7 @@ public class UserController {
             @Valid @RequestBody UserRequest.userInfo userInfo) {
         try {
             User savedUser = userService.registerUser(userInfo);
-            return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 성공적으로 완료되었습니다."  + savedUser.getName());
+            return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공: "  + savedUser.getName());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청으로 인한 회원가입 실패: " + e.getMessage());
         }
@@ -70,7 +71,6 @@ public class UserController {
     }
 
 
-
     @PostMapping("/login")
     @Operation(summary = "로그인 API")
     @ApiResponses({
@@ -93,6 +93,25 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류로 인해 로그인에 실패했습니다.");
+        }
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    })
+    public ResponseEntity<String> logout(HttpSession session) {
+        try{
+            userService.logout(session);
+            return ResponseEntity.ok("로그아웃 성공");
+        } catch(BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청으로 인한 로그아웃 실패: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류로 인해 로그아웃에 실패");
         }
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import skuniv.munchmap.dto.StoreResponse;
-import skuniv.munchmap.service.UserService;
+import skuniv.munchmap.service.StoreService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Map;
 @RequestMapping("api/v1/stores")
 public class StoreController {
 
-    private final UserService userService;
+    private final StoreService storeService;
 
     @GetMapping("/{userId}/favor-store")
     @Operation(summary = "사용자 기반 추천 음식점 목록 조회 API")
@@ -38,9 +38,9 @@ public class StoreController {
 
             // 랜덤으로 조회할지 여부 결정
             if (random) {
-                stores = userService.getRandomStores(lastStoreId);
+                stores = storeService.getRandomStores(lastStoreId);
             } else {
-                stores = userService.getFilteredStores(userId, lastStoreId);
+                stores = storeService.getFilteredStores(userId, lastStoreId);
             }
 
             // 응답 메시지와 데이터를 Map에 담아서 반환

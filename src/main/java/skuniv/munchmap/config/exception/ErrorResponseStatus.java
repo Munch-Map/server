@@ -21,6 +21,7 @@ public enum ErrorResponseStatus {
     // 4000 : Database, Server 오류
     DATABASE_ERROR(4000, "데이터 베이스 접근 오류."),
     QUERY_TIMEOUT_ERROR(4001, "쿼리 타임 아웃 에러."),
+    NOT_EXIST_PW(4002, "비밀번호가 존재하지 않습니다."),
 
 
     // 5000 : Server connection 오류
