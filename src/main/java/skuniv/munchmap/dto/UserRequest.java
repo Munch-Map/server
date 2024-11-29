@@ -1,7 +1,7 @@
 package skuniv.munchmap.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -35,6 +35,7 @@ public class UserRequest {
     @Schema(title="USER_REQ_02 : 회원가입 시 카테고리 선택 DTO")
     public static class userFavor {
         @Schema(description = "선호 카테고리 ID 리스트", example = "[1, 3, 5]")
+        @JsonProperty("categoryIds") // 역직렬화 필요
         private List<Long> categoryIds;
     }
 

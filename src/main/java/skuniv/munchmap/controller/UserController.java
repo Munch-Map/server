@@ -60,7 +60,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류"),
     })
     public ResponseEntity<String> chooseFavor(
-            @RequestBody UserRequest.userFavor userFavor,
+            @RequestBody @Valid UserRequest.userFavor userFavor,
             @PathVariable Long userId) {
         try {
             List<String> savedFavor = userService.chooseUserFavor(userFavor, userId);
