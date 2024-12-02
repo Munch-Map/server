@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import skuniv.munchmap.dto.UserRequest;
 import skuniv.munchmap.repository.UserRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
@@ -165,31 +165,39 @@ public class UserService {
     }
 
     // (5) 사용자가 선택한 카테고리로 필터링
-    @Transactional
-    public List<StoreResponse.StoreResponseDTO> getFilteredStores(Long userId, Long lastStoreId) {
-        // 사용자의 선호 카테고리를 조회
-        List<Long> favoriteCategoryIds = userFavorCategoryRepository.findCategoryIdsByUserId(userId);
+    @Transactional(readOnly = true)
+    public List<Long> getFavoriteCategoryIds(Long userId) {
+        // 해당 사용자의 선호 카테고리 ID 목록을 조회
+        List<UserFavorCategory> favoriteCategories = userFavorCategoryRepository.findByUserId(userId);
 
-        // 선호 카테고리가 없으면 랜덤으로 조회
-        if (favoriteCategoryIds == null || favoriteCategoryIds.isEmpty()) {
-            return getRandomStores(lastStoreId);
+        // 선호 카테고리가 없으면 빈 리스트 반환
+        if (favoriteCategories == null || favoriteCategories.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        // 선호 카테고리를 기반으로 음식점 조회
+        // 선호 카테고리의 ID만 추출하여 리스트로 반환
+        return favoriteCategories.stream()
+                .map(userFavoriteCategory -> userFavoriteCategory.getCategory().getCategoryId())
+                .collect(Collectors.toList());
+    }
+
+    // (5)-3 카테고리별 가게 조회 (커서 페이징 적용)
+    @Transactional
+    public List<StoreResponse.StoreResponseDTO> getStoresByCategory(Long categoryId, Long lastStoreId) {
         Pageable pageable = PageRequest.of(0, 10);
-        return storeRepository.findStoresByCategoriesWithCursor(favoriteCategoryIds, lastStoreId, pageable)
+        return storeRepository.findStoresByCategoryWithCursor(categoryId, lastStoreId, pageable)
                 .stream()
                 .map(StoreResponse.StoreResponseDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    // (5)-1 랜덤으로 음식점 조회 (커서 페이징 적용)
+    // (5)-2 랜덤으로 가게 조회 (커서 페이징 적용)
     @Transactional
     public List<StoreResponse.StoreResponseDTO> getRandomStores(Long lastStoreId) {
         Pageable pageable = PageRequest.of(0, 10);
         return storeRepository.findRandomStoresWithCursor(lastStoreId, pageable)
                 .stream()
                 .map(StoreResponse.StoreResponseDTO::fromEntity)
-                .collect(Collectors.toList());
+        .collect(Collectors.toList());
     }
 }

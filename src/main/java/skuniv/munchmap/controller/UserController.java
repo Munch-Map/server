@@ -128,16 +128,31 @@ public class UserController {
     })
     public ResponseEntity<Map<String, Object>> getRecommendedStores(
             @PathVariable Long userId,
+            @RequestParam(required = false)  Long categoryId, // 추가된 파라미터
             @RequestParam(required = false, defaultValue = "false") boolean random,
             @RequestParam(required = false, defaultValue = "0") Long lastStoreId) {
         try {
             List<StoreResponse.StoreResponseDTO> stores;
 
-            // 랜덤으로 조회할지 여부 결정
-            if (random) {
+            // 사용자의 선호 카테고리 조회
+            List<Long> favoriteCategoryIds = userService.getFavoriteCategoryIds(userId);
+
+            // 사용자 선호 카테고리가 null인 경우 무조건 랜덤 조회
+            if (favoriteCategoryIds == null || favoriteCategoryIds.isEmpty()) {
                 stores = userService.getRandomStores(lastStoreId);
             } else {
-                stores = userService.getFilteredStores(userId, lastStoreId);
+                // 랜덤 조회인 경우
+                if (random) {
+                    stores = userService.getRandomStores(lastStoreId);
+                }
+                // 특정 카테고리 조회인 경우
+                else if (categoryId != null && favoriteCategoryIds.contains(categoryId)) {
+                    stores = userService.getStoresByCategory(categoryId, lastStoreId);
+                }
+                // 선호 카테고리가 있지만 유효하지 않은 요청인 경우
+                else {
+                    stores = userService.getRandomStores(lastStoreId);
+                }
             }
 
             // 응답 메시지와 데이터를 Map에 담아서 반환
@@ -159,4 +174,5 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
 }
