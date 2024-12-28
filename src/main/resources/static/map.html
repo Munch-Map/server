@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kakao Map with User Location</title>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86616cc8d864d28593988196235ee2b6"></script>
+</head>
+<body>
+    <!-- 지도 컨테이너 -->
+    <div id="map" style="width:1440px; height:1169px;"></div>
+    <script>
+        // 지도 초기화
+        var mapContainer = document.getElementById('map'); // 지도를 표시할 div
+        var mapOption = {
+            center: new kakao.maps.LatLng(37.5665, 126.9780), // 초기 지도 중심 좌표 (서울)
+            level: 3 // 초기 지도 확대 레벨
+        };
+
+        // 지도 생성
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 사용자의 현재 위치 가져오기
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var lat = position.coords.latitude; // 위도
+                var lon = position.coords.longitude; // 경도
+                var locPosition = new kakao.maps.LatLng(lat, lon); // 현재 위치 좌표
+
+                // 지도 중심을 사용자 위치로 이동
+                map.setCenter(locPosition);
+
+                // 마커 추가
+                var marker = new kakao.maps.Marker({
+                    position: locPosition
+                });
+                marker.setMap(map);
+            });
+        } else {
+            alert('현재 위치를 가져올 수 없습니다.');
+        }
+    </script>
+</body>
+</html>

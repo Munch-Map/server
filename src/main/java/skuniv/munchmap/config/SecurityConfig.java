@@ -32,7 +32,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
                                 "/swagger-ui.html", "/webjars/**", "/oauth2/callback/kakao/**",
                                 "/oauth2/authorization/kakao", "/login", "/api/v1/users/**",
-                                "/api/v1/oauth2/**"
+                                "/api/v1/maps/place/**", "/api/v1/oauth2/**", "/map.html"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

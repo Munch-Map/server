@@ -38,6 +38,14 @@ spring:
     property-naming-strategy: SNAKE_CASE
     deserialization:
       fail-on-unknown-properties: false
+  kakao:
+    api:
+      javascript-key: ${KAKAO_API}
+
+  mvc:
+    view:
+      prefix: /static/
+      suffix: .html
 
 logging:
   level:

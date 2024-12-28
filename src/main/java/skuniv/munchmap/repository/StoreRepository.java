@@ -20,4 +20,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "AND s.storeId > :lastStoreId " +
             "ORDER BY s.storeId ASC")
     List<Store> findStoresByCategoryWithCursor(@Param("categoryId") Long categoryId, @Param("lastStoreId") Long lastStoreId, Pageable pageable);
+
+
+
 }
