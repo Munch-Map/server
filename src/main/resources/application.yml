@@ -1,1 +1,31 @@
-spring.application.name=munchmap
+spring:
+  kakao:
+    api-key: "463f7d58e214d81e0c21d9a119bdde90"
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/munchmap
+    username: root
+    password: chae0123
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+      logging:
+        level:
+          org.hibernate.SQL: DEBUG
+          org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+#jwt:
+#  secret: 4mhWXgaUGNLAaGevr23YJn0j3JbIcFOB
